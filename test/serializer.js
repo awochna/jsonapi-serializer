@@ -1607,5 +1607,36 @@ describe('JSON API Serializer', function () {
       expect(json.data[1].relationships.address.data).to.be.empty;
       done(null, json);
     });
+
+    it('should only serialize address.street attribute', function (done) {
+      var dataSet = {
+        id: '1',
+        firstName: 'Sandro',
+        lastName: 'Munda',
+        address: [{
+          type: 'home',
+          street: 'Dogwood Way',
+          zip: '12345'
+        },{
+          type: 'work',
+          street: 'Dogwood Way 2',
+          zip: '12345'
+        }]
+      };
+
+      var json = new JsonApiSerializer('users', dataSet, {
+        attributes: ['id', 'firstName', 'updated_at', 'address'],
+        address: {
+          attributes: ['street']
+        }
+      });
+
+      expect(json.data.attributes.address).eql([
+        { street: 'Dogwood Way' },
+        { street: 'Dogwood Way 2' }
+      ]);
+
+      done(null, json);
+    });
   });
 });
